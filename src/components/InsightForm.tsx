@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { useInsightStore } from "@/lib/store/insight.store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
 
 export function InsightForm() {
   const {
@@ -28,33 +30,67 @@ export function InsightForm() {
     setError,
     reset,
   } = useInsightStore();
+  const urlInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus sur l'input URL au chargement
+  useEffect(() => {
+    urlInputRef.current?.focus();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url && !text) {
       setError("Veuillez entrer une URL ou un texte");
+      toast.error("Veuillez entrer une URL ou un texte");
       return;
     }
+
+    if (url && !isValidUrl(url)) {
+      setError("URL invalide");
+      toast.error("URL invalide");
+      return;
+    }
+
+    if (text && text.length < 50) {
+      setError("Le texte doit contenir au moins 50 caractères");
+      toast.error("Le texte est trop court");
+      return;
+    }
+
     setLoading(true);
-    try {
-      const response = await fetch("/api/analyze", {
+    toast.promise(
+      fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url, text }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Une erreur est survenue");
+      })
+        .then(async (response) => {
+          const data = await response.json();
+          if (!response.ok)
+            throw new Error(data.error || "Une erreur est survenue");
+          setSummary(data.summary);
+          return data;
+        })
+        .catch((err) => {
+          const message =
+            err instanceof Error ? err.message : "Une erreur est survenue";
+          setError(message);
+          throw err;
+        })
+        .finally(() => setLoading(false)),
+      {
+        loading: "Analyse en cours...",
+        success: "Résumé généré avec succès !",
+        error: (err) =>
+          err instanceof Error ? err.message : "Une erreur est survenue",
       }
+    );
+  };
 
-      setSummary(data.summary);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue");
-    } finally {
-      setLoading(false);
-    }
+  const handleReset = () => {
+    reset();
+    urlInputRef.current?.focus();
+    toast.info("Formulaire réinitialisé");
   };
 
   return (
@@ -69,21 +105,28 @@ export function InsightForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
+            ref={urlInputRef}
             type="url"
             placeholder="https://example.com/article"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={(e) => {
+              setUrl(e.target.value);
+              setError(null);
+            }}
             className="w-full"
           />
           <Textarea
             placeholder="Ou collez votre texte ici..."
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              setText(e.target.value);
+              setError(null);
+            }}
             className="w-full min-h-[200px]"
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={reset}>
+            <Button type="button" variant="outline" onClick={handleReset}>
               Réinitialiser
             </Button>
             <Button type="submit" disabled={isLoading}>
@@ -102,4 +145,13 @@ export function InsightForm() {
       )}
     </Card>
   );
+}
+
+function isValidUrl(url: string) {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }
