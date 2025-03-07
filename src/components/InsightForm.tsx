@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import ReactMarkdown from "react-markdown";
 
 export function InsightForm() {
   const {
@@ -36,8 +37,19 @@ export function InsightForm() {
     }
     setLoading(true);
     try {
-      // TODO: Implémenter l'appel API dans la phase 3
-      setSummary("Résumé temporaire pour test");
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, text }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue");
+      }
+
+      setSummary(data.summary);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {
@@ -81,9 +93,11 @@ export function InsightForm() {
         </form>
       </CardContent>
       {summary && (
-        <CardFooter className="flex flex-col">
-          <h3 className="text-lg font-semibold mb-2">Résumé</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">{summary}</p>
+        <CardFooter className="flex flex-col w-full">
+          <h3 className="text-lg font-semibold mb-4 w-full">Résumé</h3>
+          <div className="prose prose-sm dark:prose-invert w-full max-w-none prose-headings:mb-3 prose-headings:mt-6 prose-h2:text-xl prose-h2:font-semibold prose-p:my-2 prose-ul:my-2 prose-li:my-0 prose-blockquote:my-2 prose-blockquote:pl-4 prose-blockquote:border-l-2 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600">
+            <ReactMarkdown>{summary}</ReactMarkdown>
+          </div>
         </CardFooter>
       )}
     </Card>
