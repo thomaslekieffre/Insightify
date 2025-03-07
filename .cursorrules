@@ -1,0 +1,79 @@
+<project>
+> **Pitch** : Insightify est un outil qui **extrait automatiquement les insights clés** d’un texte ou d’un article web. En un clic, l’utilisateur obtient un résumé concis et pertinent, prêt à être utilisé ou partagé.
+
+---
+
+## **🛠️ Stack technique**
+
+✅ **Next.js (App Router)** → Performant & optimisé SEO.  
+✅ **shadcn/ui** → UI ultra propre et fluide.  
+✅ **Tailwind CSS** → Styles rapides et responsifs.  
+✅ **LangChain + Mistral AI** → Génération de résumés intelligents.
+✅ **API de scraping (Mercury API ou ScraperAPI)** → Extraction de contenu depuis une URL.  
+✅ **Zustand** → Gestion du state minimaliste et efficace.  
+✅ **Vercel** → Hébergement rapide avec serverless functions.
+
+---
+
+## **🛤️ Étapes de développement**
+
+### **📌 Phase 1 – Setup du projet**
+
+🔹 **Créer le repo Git** & init Next.js (`npx create-next-app@latest insightify`).  
+🔹 **Configurer Tailwind & shadcn** (`npx shadcn-ui init`).
+
+---
+
+### **📌 Phase 2 – UI & Composants**
+
+🔹 **Créer l’interface principale** avec **shadcn/ui** :
+
+- Un **Input pour l’URL**.
+- Un **Textarea pour coller du texte**.
+- Un **Bouton "Analyser"** qui envoie la requête.
+- Un **Card affichant le résumé** avec **bouton Copier**.
+- **Mode Dark/Light** activé direct.  
+  🔹 **Gestion du state avec Zustand** pour stocker le résumé et l’input utilisateur.
+
+---
+
+### **📌 Phase 3 – Extraction et Résumé IA**
+
+🔹 **Scraping d’articles** via Mercury API / ScraperAPI.  
+🔹 **Intégration Mistral AI** pour générer des résumés impactants.  
+🔹 **Optimisation** du prompt pour extraire des **bullet points + phrases clés + chiffres marquants**.  
+🔹 **Affichage dynamique** des résultats en **shadcn Card avec animations**.
+
+---
+
+### **📌 Phase 4 – UX & Optimisations**
+
+🔹 **Ajout de toasts & loaders** (`shadcn/ui Toast`).  
+🔹 **Optimisation de l’UX** :
+
+- Gestion des erreurs (URL invalide, texte trop court, etc.).
+- **Auto-focus** sur l’input au chargement.  
+  🔹 **Refactoring et nettoyage du code**.
+
+---
+
+### **📌 Phase 5 – Déploiement & Finalisation**
+
+🔹 **Déploiement sur Vercel**.  
+🔹 **Ajout d’un favicon & meta SEO** pour le partage.  
+🔹 **Partage sur Twitter / Product Hunt / Discord** pour avoir des retours.
+
+---
+
+## **🔥 Bonus Features (Si tu veux aller plus loin)**
+
+🔹 **Mode "Tweet Ready"** → Résumé en format **thread X** prêt à poster.  
+🔹 **Highlight AI** → Mise en évidence des phrases les plus marquantes.  
+🔹 **Mode Offline** → Stocker les résumés en local avec **IndexedDB**.  
+🔹 **Export PDF** → Permet de sauvegarder les insights.  
+🔹 **API publique** → Un endpoint REST pour que d’autres devs puissent l’utiliser.
+
+### **🎯 Objectif final**
+
+Avoir un **outil simple, rapide et efficace** pour générer des insights **en 1 clic** à partir d’un texte ou d’un article. Un bon projet **prêt à scaler** si tu veux pousser plus loin avec un SaaS.
+</project>
