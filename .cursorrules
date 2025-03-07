@@ -20,7 +20,7 @@
 ### **📌 Phase 1 – Setup du projet**
 
 🔹 **Créer le repo Git** & init Next.js (`npx create-next-app@latest insightify`).  
-🔹 **Configurer Tailwind & shadcn** (`npx shadcn-ui init`).
+🔹 **Configurer Tailwind & shadcn** (`npx shadcn@latest init`).
 
 ---
 
