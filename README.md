@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔍 Insightify
 
-## Getting Started
+Insightify est un outil qui **extrait automatiquement les insights clés** d'un texte ou d'un article web. En un clic, obtenez un résumé concis et pertinent, prêt à être utilisé ou partagé.
 
-First, run the development server:
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Next.js](https://img.shields.io/badge/Next.js-15.0.0-black)
+
+## 📑 Table des matières
+
+- [🚀 Fonctionnalités](#-fonctionnalités)
+- [⚙️ Technologies](#️-technologies)
+- [🛠️ Installation](#️-installation)
+- [📖 Utilisation](#-utilisation)
+- [🌐 Déploiement](#-déploiement)
+- [🔥 Bonus Features](#-bonus-features)
+
+## 🚀 Fonctionnalités
+
+- **Extraction d'insights** depuis un texte ou une URL
+- **Résumé structuré** avec points clés, citations et chiffres
+- **Interface moderne** avec mode sombre/clair
+- **Copie rapide** des résumés générés
+- **Responsive design** pour une utilisation sur tous les appareils
+
+## ⚙️ Technologies
+
+- **Frontend**: Next.js 15 (App Router)
+- **UI**: shadcn/ui + Tailwind CSS
+- **IA**: LangChain + Mistral AI
+- **State**: Zustand
+- **Hébergement**: Vercel
+
+## 🛠️ Installation
+
+1. **Cloner le repo**
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/votre-username/insightify.git
+cd insightify
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Installer les dépendances**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **Configurer les variables d'environnement**
 
-## Learn More
+```bash
+cp .env.example .env.local
+```
 
-To learn more about Next.js, take a look at the following resources:
+Remplir les variables suivantes:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `MISTRAL_API_KEY` - Clé API Mistral AI
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Lancer le serveur de développement**
 
-## Deploy on Vercel
+```bash
+pnpm dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+L'app sera disponible sur [http://localhost:3000](http://localhost:3000)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📖 Utilisation
+
+1. **Coller un texte** ou **entrer une URL** dans le champ prévu
+2. Cliquer sur **Analyser**
+3. Le résumé s'affiche avec:
+   - Points clés
+   - Citations importantes
+   - Chiffres & statistiques
+   - Conclusion
+4. Utiliser le bouton **Copier** pour partager le résumé
+
+## 🌐 Déploiement
+
+Le déploiement se fait automatiquement sur Vercel:
+
+1. Fork le repo
+2. Connecter le repo à Vercel
+3. Configurer les variables d'environnement
+4. Déployer !
+
+## 🔥 Bonus Features
+
+- **Mode "Tweet Ready"** - Résumé en format thread X
+- **Mode Offline** - Stockage local des résumés
+- **Export PDF** - Sauvegarde des insights
+
+## 📝 License
+
+MIT © Thomas Lekieffre
