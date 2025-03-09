@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";
+import breaks from "remark-breaks";
 import { toast } from "sonner";
 import { TweetThread } from "./TweetThread";
 import { InsightHistory } from "./InsightHistory";
@@ -235,10 +236,21 @@ export function InsightForm() {
             <TabsContent value="resume" className="mt-4">
               <div
                 id="insight-content"
-                className="prose prose-sm dark:prose-invert w-full max-w-none prose-headings:mb-3 prose-headings:mt-6 prose-h2:text-xl prose-h2:font-semibold prose-p:my-2 prose-ul:my-2 prose-li:my-0 prose-blockquote:my-2 prose-blockquote:pl-4 prose-blockquote:border-l-2 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600"
+                className="prose prose-sm dark:prose-invert w-full max-w-none 
+                  prose-headings:mb-6 prose-headings:mt-8 
+                  prose-h2:text-xl prose-h2:font-semibold 
+                  prose-p:my-4 prose-p:leading-relaxed
+                  prose-ul:my-4 prose-li:my-2
+                  prose-blockquote:my-6 prose-blockquote:pl-4 
+                  prose-blockquote:border-l-2 prose-blockquote:border-gray-300 
+                  dark:prose-blockquote:border-gray-600
+                  [&_p]:whitespace-pre-wrap
+                  [&>*]:!mt-0 [&>*+*]:!mt-6"
               >
                 {summary ? (
-                  <ReactMarkdown>{summary}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[breaks]}>
+                    {summary.replace(/\n/g, "\n\n")}
+                  </ReactMarkdown>
                 ) : (
                   <div className="text-muted-foreground">
                     <p>
