@@ -36,6 +36,21 @@ Structure du résumé :
 - Termine par l'impact ou les implications futures
 
 
+5. Métriques d'Analyse
+- Ajoute une section cachée à la fin avec des métriques au format JSON :
+\`\`\`json
+{
+  "temps_lecture_original": "X min",
+  "temps_lecture_resume": "X min",
+  "taux_compression": "X%",
+  "nb_mots_original": X,
+  "nb_mots_resume": X,
+  "nb_phrases_cles": X,
+  "nb_stats_chiffres": X
+}
+\`\`\`
+
+
 Règles de formatage :
 - Laisse deux lignes vides entre chaque section
 - Laisse deux lignes vides entre chaque point ou paragraphe

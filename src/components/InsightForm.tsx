@@ -19,6 +19,7 @@ import { TweetThread } from "./TweetThread";
 import { InsightHistory } from "./InsightHistory";
 import { PdfExport } from "./PdfExport";
 import { saveInsight } from "@/lib/services/storage.service";
+import { InsightStats } from "./InsightStats";
 
 const EXAMPLE_TEXT = `Titre: The Impact of Climate Change on Global Health
 
@@ -38,11 +39,13 @@ export function InsightForm() {
     url,
     text,
     summary,
+    stats,
     isLoading,
     error,
     setUrl,
     setText,
     setSummary,
+    setStats,
     setLoading,
     setError,
     reset,
@@ -54,6 +57,21 @@ export function InsightForm() {
   useEffect(() => {
     urlInputRef.current?.focus();
   }, []);
+
+  const extractStatsFromSummary = (summary: string) => {
+    const statsMatch = summary.match(/```json\n([\s\S]*?)\n```/);
+    if (!statsMatch) return null;
+
+    try {
+      const statsJson = JSON.parse(statsMatch[1]);
+      // Retire la section stats du résumé
+      const cleanSummary = summary.replace(/```json\n[\s\S]*?\n```/, "").trim();
+      return { stats: statsJson, cleanSummary };
+    } catch (e) {
+      console.error("Erreur lors du parsing des stats:", e);
+      return null;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +114,14 @@ export function InsightForm() {
         throw new Error(data.error || "Une erreur est survenue");
       }
 
-      setSummary(data.summary);
+      const statsData = extractStatsFromSummary(data.summary);
+      if (statsData) {
+        setSummary(statsData.cleanSummary);
+        setStats(statsData.stats);
+      } else {
+        setSummary(data.summary);
+      }
+
       // Sauvegarder dans l'historique
       await saveInsight({ url, text, summary: data.summary });
       toast.success("Résumé généré avec succès !");
@@ -190,11 +215,14 @@ export function InsightForm() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Résultat</CardTitle>
-          {summary && (
-            <PdfExport contentId="insight-content" content={summary} />
-          )}
+          {summary && <PdfExport content={summary} />}
         </CardHeader>
         <CardContent>
+          {stats && (
+            <div className="mb-6">
+              <InsightStats stats={stats} />
+            </div>
+          )}
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}

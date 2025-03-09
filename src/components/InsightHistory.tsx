@@ -11,13 +11,25 @@ import {
 } from "@/lib/services/storage.service";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
+import { InsightStats } from "./InsightStats";
+
+type InsightStats = {
+  temps_lecture_original: string;
+  temps_lecture_resume: string;
+  taux_compression: string;
+  nb_mots_original: number;
+  nb_mots_resume: number;
+  nb_phrases_cles: number;
+  nb_stats_chiffres: number;
+};
 
 type Insight = {
   id: string;
   url?: string;
-  text?: string;
+  text: string;
   summary: string;
-  createdAt: number;
+  stats?: InsightStats;
+  createdAt: string;
 };
 
 export function InsightHistory() {
@@ -128,6 +140,11 @@ export function InsightHistory() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {insight.stats && (
+                <div className="mb-6">
+                  <InsightStats stats={insight.stats} />
+                </div>
+              )}
               <div className="prose prose-sm dark:prose-invert">
                 <ReactMarkdown>{insight.summary}</ReactMarkdown>
               </div>
