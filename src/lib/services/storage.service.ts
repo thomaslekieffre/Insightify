@@ -1,73 +1,73 @@
-import { openDB, DBSchema } from "idb";
+import { openDB } from "idb";
 
-interface InsightDBSchema extends DBSchema {
-  insights: {
-    key: string;
-    value: {
-      id: string;
-      url?: string;
-      text?: string;
-      summary: string;
-      createdAt: number;
-    };
-    indexes: { "by-date": number };
-  };
-}
+const DB_NAME = "insightify";
+const STORE_NAME = "insights";
+const VERSION = 1;
 
-let dbPromise: Promise<any> | null = null;
+type InsightStats = {
+  temps_lecture_original: string;
+  temps_lecture_resume: string;
+  taux_compression: string;
+  nb_mots_original: number;
+  nb_mots_resume: number;
+  nb_phrases_cles: number;
+  nb_stats_chiffres: number;
+};
 
-function getDB() {
-  if (typeof window === "undefined") return null;
-
-  if (!dbPromise) {
-    dbPromise = openDB<InsightDBSchema>("insightify-db", 1, {
-      upgrade(db) {
-        const store = db.createObjectStore("insights", {
-          keyPath: "id",
-        });
-        store.createIndex("by-date", "createdAt");
-      },
-    });
-  }
-
-  return dbPromise;
-}
-
-export async function saveInsight(data: {
+type Insight = {
+  id: string;
   url?: string;
-  text?: string;
+  text: string;
   summary: string;
-}) {
-  const db = await getDB();
-  if (!db) return null;
+  stats?: InsightStats;
+  createdAt: string;
+};
 
-  const id = crypto.randomUUID();
-  const insight = {
-    id,
-    ...data,
-    createdAt: Date.now(),
+const initDB = async () => {
+  return openDB(DB_NAME, VERSION, {
+    upgrade(db) {
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      }
+    },
+  });
+};
+
+export const saveInsight = async ({
+  url,
+  text,
+  summary,
+  stats,
+}: {
+  url?: string;
+  text: string;
+  summary: string;
+  stats?: InsightStats;
+}) => {
+  const db = await initDB();
+  const insight: Insight = {
+    id: crypto.randomUUID(),
+    url,
+    text,
+    summary,
+    stats,
+    createdAt: new Date().toISOString(),
   };
-  await db.add("insights", insight);
+  await db.add(STORE_NAME, insight);
   return insight;
-}
+};
 
-export async function getInsights(limit = 10) {
-  const db = await getDB();
-  if (!db) return [];
+export const getInsights = async (): Promise<Insight[]> => {
+  const db = await initDB();
+  return db.getAll(STORE_NAME);
+};
 
-  return db.getAllFromIndex("insights", "by-date");
-}
+export const deleteInsight = async (id: string) => {
+  const db = await initDB();
+  await db.delete(STORE_NAME, id);
+};
 
-export async function deleteInsight(id: string) {
-  const db = await getDB();
-  if (!db) return;
-
-  await db.delete("insights", id);
-}
-
-export async function clearInsights() {
-  const db = await getDB();
-  if (!db) return;
-
-  await db.clear("insights");
-}
+export const clearInsights = async () => {
+  const db = await initDB();
+  await db.clear(STORE_NAME);
+};

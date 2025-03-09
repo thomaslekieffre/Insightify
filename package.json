@@ -27,9 +27,11 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
+    "remark-breaks": "^4.0.0",
     "sonner": "^2.0.1",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -41,5 +43,9 @@
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "description": "Insightify est un outil qui **extrait automatiquement les insights clés** d'un texte ou d'un article web. En un clic, obtenez un résumé concis et pertinent, prêt à être utilisé ou partagé.",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
 }

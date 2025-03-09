@@ -14,11 +14,13 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";
+import breaks from "remark-breaks";
 import { toast } from "sonner";
 import { TweetThread } from "./TweetThread";
 import { InsightHistory } from "./InsightHistory";
 import { PdfExport } from "./PdfExport";
 import { saveInsight } from "@/lib/services/storage.service";
+import { InsightStats } from "./InsightStats";
 
 const EXAMPLE_TEXT = `Titre: The Impact of Climate Change on Global Health
 
@@ -38,11 +40,13 @@ export function InsightForm() {
     url,
     text,
     summary,
+    stats,
     isLoading,
     error,
     setUrl,
     setText,
     setSummary,
+    setStats,
     setLoading,
     setError,
     reset,
@@ -54,6 +58,21 @@ export function InsightForm() {
   useEffect(() => {
     urlInputRef.current?.focus();
   }, []);
+
+  const extractStatsFromSummary = (summary: string) => {
+    const statsMatch = summary.match(/```json\n([\s\S]*?)\n```/);
+    if (!statsMatch) return null;
+
+    try {
+      const statsJson = JSON.parse(statsMatch[1]);
+      // Retire la section stats du résumé
+      const cleanSummary = summary.replace(/```json\n[\s\S]*?\n```/, "").trim();
+      return { stats: statsJson, cleanSummary };
+    } catch (e) {
+      console.error("Erreur lors du parsing des stats:", e);
+      return null;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +115,14 @@ export function InsightForm() {
         throw new Error(data.error || "Une erreur est survenue");
       }
 
-      setSummary(data.summary);
+      const statsData = extractStatsFromSummary(data.summary);
+      if (statsData) {
+        setSummary(statsData.cleanSummary);
+        setStats(statsData.stats);
+      } else {
+        setSummary(data.summary);
+      }
+
       // Sauvegarder dans l'historique
       await saveInsight({ url, text, summary: data.summary });
       toast.success("Résumé généré avec succès !");
@@ -190,11 +216,14 @@ export function InsightForm() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Résultat</CardTitle>
-          {summary && (
-            <PdfExport contentId="insight-content" content={summary} />
-          )}
+          {summary && <PdfExport content={summary} />}
         </CardHeader>
         <CardContent>
+          {stats && (
+            <div className="mb-6">
+              <InsightStats stats={stats} />
+            </div>
+          )}
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
@@ -207,10 +236,21 @@ export function InsightForm() {
             <TabsContent value="resume" className="mt-4">
               <div
                 id="insight-content"
-                className="prose prose-sm dark:prose-invert w-full max-w-none prose-headings:mb-3 prose-headings:mt-6 prose-h2:text-xl prose-h2:font-semibold prose-p:my-2 prose-ul:my-2 prose-li:my-0 prose-blockquote:my-2 prose-blockquote:pl-4 prose-blockquote:border-l-2 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600"
+                className="prose prose-sm dark:prose-invert w-full max-w-none 
+                  prose-headings:mb-6 prose-headings:mt-8 
+                  prose-h2:text-xl prose-h2:font-semibold 
+                  prose-p:my-4 prose-p:leading-relaxed
+                  prose-ul:my-4 prose-li:my-2
+                  prose-blockquote:my-6 prose-blockquote:pl-4 
+                  prose-blockquote:border-l-2 prose-blockquote:border-gray-300 
+                  dark:prose-blockquote:border-gray-600
+                  [&_p]:whitespace-pre-wrap
+                  [&>*]:!mt-0 [&>*+*]:!mt-6"
               >
                 {summary ? (
-                  <ReactMarkdown>{summary}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[breaks]}>
+                    {summary.replace(/\n/g, "\n\n")}
+                  </ReactMarkdown>
                 ) : (
                   <div className="text-muted-foreground">
                     <p>
